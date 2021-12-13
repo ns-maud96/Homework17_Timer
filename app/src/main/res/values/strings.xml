@@ -1,3 +1,7 @@
 <resources>
     <string name="app_name">Homework17_Timer</string>
+    <string name="editTextSeconds">Number of seconds</string>
+    <string name="btnStart">start</string>
+    <string name="btnPause">pause</string>
+    <string name="btnReset">reset</string>
 </resources>
