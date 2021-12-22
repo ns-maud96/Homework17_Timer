@@ -84,4 +84,9 @@ class MainActivity : AppCompatActivity() {
             vibrator.vibrate(200);
         }
     }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        scope.cancel()
+    }
 }
