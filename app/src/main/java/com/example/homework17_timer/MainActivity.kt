@@ -1,7 +1,8 @@
 package com.example.homework17_timer
 
+import android.content.Context
+import android.os.*
 import androidx.appcompat.app.AppCompatActivity
-import android.os.Bundle
 import android.text.Editable
 import androidx.appcompat.app.AlertDialog
 import kotlinx.android.synthetic.main.activity_main.*
@@ -9,17 +10,13 @@ import kotlinx.coroutines.*
 
 class MainActivity : AppCompatActivity() {
 
-    private val scope = CoroutineScope(Dispatchers.Default)
+    private val scope = CoroutineScope(Dispatchers.Main)
     private var job: Job? = null
     private var alertDialog: AlertDialog? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-    }
-
-    override fun onStart() {
-        super.onStart()
 
         btnStart.setOnClickListener {
             startTimer(inputSeconds.text)
@@ -41,8 +38,8 @@ class MainActivity : AppCompatActivity() {
                     secondsToInt -= 1
                     inputSeconds.text =
                         Editable.Factory.getInstance().newEditable("$secondsToInt")
-//                    vibrate()
                 }
+                vibrate()
             }
         }
     }
@@ -66,10 +63,30 @@ class MainActivity : AppCompatActivity() {
         alertDialog = alertDialogBuilder.create()
         alertDialog?.show()
     }
-/*
-private fun vibrate() {
-val vibration = getSystemService(Context.VIBRATOR_MANAGER_SERVICE) as Vibrator
-vibration.vibrate(VibrationEffect.createOneShot(2, 2))
-}
-*/
+
+    private fun vibrate() {
+        val vibrator = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            val vibratorManager =
+                this.getSystemService(Context.VIBRATOR_MANAGER_SERVICE) as VibratorManager
+            vibratorManager.defaultVibrator;
+        } else {
+            this.getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
+        }
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            vibrator.vibrate(
+                VibrationEffect.createOneShot(
+                    200,
+                    VibrationEffect.DEFAULT_AMPLITUDE
+                )
+            )
+        } else {
+            vibrator.vibrate(200);
+        }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        scope.cancel()
+    }
 }
